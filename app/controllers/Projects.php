@@ -40,13 +40,22 @@ class Projects extends Controller {
 
         // Kategorileri getir
         $categories = $this->projectModel->getAllCategories();
+        
+        // İstatistikleri getir
+        $stats = [
+            'project_count' => $this->projectModel->getProjectCount(),
+            'active_project_count' => $this->projectModel->getActiveProjectCount(),
+            'freelancer_count' => count($this->userModel->getAllFreelancers()),
+            'employer_count' => count($this->userModel->getAllEmployers())
+        ];
 
         // View'a gönder
         $data = [
             'title' => 'Projeler',
             'projects' => $projects,
             'categories' => $categories,
-            'filter' => $filter
+            'filter' => $filter,
+            'stats' => $stats
         ];
 
         $this->view('projects/index', $data);

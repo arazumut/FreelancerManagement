@@ -1,5 +1,16 @@
 // Document ready
 document.addEventListener('DOMContentLoaded', function() {
+    // AOS animasyon kütüphanesini başlat
+    AOS.init({
+        duration: 800,
+        easing: 'ease-in-out',
+        once: true,
+        mirror: false
+    });
+
+    // Sayfa yükleme animasyonu
+    document.body.classList.add('page-loaded');
+
     // Flash mesajları için otomatik kapanma
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
@@ -9,6 +20,39 @@ document.addEventListener('DOMContentLoaded', function() {
                 closeBtn.click();
             }
         }, 5000); // 5 saniye sonra kapat
+    });
+
+    // Buton dalgalanma efekti
+    const rippleButtons = document.querySelectorAll('.btn-ripple');
+    rippleButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            const rect = button.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const ripple = document.createElement('span');
+            ripple.className = 'ripple-effect';
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
+            
+            button.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+    });
+
+    // Navbar scroll efekti
+    window.addEventListener('scroll', function() {
+        const navbar = document.querySelector('.navbar');
+        if (navbar) {
+            if (window.scrollY > 50) {
+                navbar.classList.add('navbar-scrolled');
+            } else {
+                navbar.classList.remove('navbar-scrolled');
+            }
+        }
     });
 
     // Form validasyonu
@@ -83,7 +127,61 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     });
                 });
+
+                // Hover efekti
+                star.addEventListener('mouseenter', function() {
+                    const hoverRating = index + 1;
+                    stars.forEach((s, i) => {
+                        if (i < hoverRating) {
+                            s.classList.add('hover');
+                        } else {
+                            s.classList.remove('hover');
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', function() {
+                    stars.forEach(s => {
+                        s.classList.remove('hover');
+                    });
+                });
             });
+        });
+    }
+
+    // Sayfa geçiş animasyonları
+    const transitionLinks = document.querySelectorAll('.transition-link');
+    transitionLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = this.getAttribute('href');
+            
+            document.body.classList.add('page-transitioning');
+            
+            setTimeout(() => {
+                window.location.href = target;
+            }, 300);
+        });
+    });
+
+    // Proje kartları için animasyon tetikleyici
+    const projectCards = document.querySelectorAll('.project-card, .profile-card');
+    if (projectCards.length > 0) {
+        const observerOptions = {
+            threshold: 0.1
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+        
+        projectCards.forEach(card => {
+            observer.observe(card);
         });
     }
 }); 

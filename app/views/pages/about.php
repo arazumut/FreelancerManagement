@@ -16,7 +16,7 @@
             <p>Vizyonumuz, freelance çalışma modelinin Türkiye'de yaygınlaşmasına öncülük etmek ve dijital ekonominin gelişimine katkıda bulunmaktır. Teknoloji ve yenilikçi çözümlerle, freelancer'ların ve işverenlerin iş yapış şekillerini dönüştürmeyi hedefliyoruz.</p>
         </div>
         <div class="col-md-6">
-            <img src="<?php echo SITE_URL; ?>/img/about-us.jpg" alt="Hakkımızda" class="img-fluid rounded shadow-sm">
+            <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1600&q=80" alt="Hakkımızda" class="img-fluid rounded shadow-sm">
         </div>
     </div>
 

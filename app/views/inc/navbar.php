@@ -1,67 +1,56 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-3">
     <div class="container">
-        <a class="navbar-brand" href="<?php echo SITE_URL; ?>">Freelancer Platformu</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <a class="navbar-brand" href="<?php echo SITE_URL; ?>" data-aos="fade-right" data-aos-duration="800">
+            <i class="fas fa-laptop-code me-2"></i>Freelancer Platformu
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto" data-aos="fade-down" data-aos-duration="800" data-aos-delay="100">
                 <li class="nav-item">
                     <a class="nav-link <?php echo ($_SERVER['REQUEST_URI'] == SITE_URL || $_SERVER['REQUEST_URI'] == SITE_URL . '/') ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>">Ana Sayfa</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?php echo (strpos($_SERVER['REQUEST_URI'], '/projects') !== false) ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/projects">Projeler</a>
+                    <a class="nav-link <?php echo (strpos($_SERVER['REQUEST_URI'], SITE_URL . '/projects') === 0) ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/projects">Projeler</a>
                 </li>
-                
-                <?php if(isLoggedIn()): ?>
-                    <?php if(isFreelancer()): ?>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo (strpos($_SERVER['REQUEST_URI'], '/bids/my') !== false) ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/bids/my">Tekliflerim</a>
-                    </li>
-                    <?php elseif(isEmployer()): ?>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo (strpos($_SERVER['REQUEST_URI'], '/projects/my') !== false) ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/projects/myProjects">Projelerim</a>
-                    </li>
+                <?php if(isset($_SESSION['user_id'])) : ?>
+                    <?php if($_SESSION['user_role'] == 'client') : ?>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo (strpos($_SERVER['REQUEST_URI'], SITE_URL . '/projects/add') === 0) ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/projects/add">Proje Ekle</a>
+                        </li>
                     <?php endif; ?>
-                    
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo (strpos($_SERVER['REQUEST_URI'], '/contracts') !== false) ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/contracts">Sözleşmelerim</a>
-                    </li>
                 <?php endif; ?>
-                
                 <li class="nav-item">
-                    <a class="nav-link <?php echo (strpos($_SERVER['REQUEST_URI'], '/pages/about') !== false) ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/pages/about">Hakkımızda</a>
+                    <a class="nav-link <?php echo (strpos($_SERVER['REQUEST_URI'], SITE_URL . '/pages/about') === 0) ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/pages/about">Hakkımızda</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?php echo (strpos($_SERVER['REQUEST_URI'], '/pages/contact') !== false) ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/pages/contact">İletişim</a>
+                    <a class="nav-link <?php echo (strpos($_SERVER['REQUEST_URI'], SITE_URL . '/pages/contact') === 0) ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/pages/contact">İletişim</a>
                 </li>
             </ul>
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <?php if(isLoggedIn()): ?>
-                    <?php if(isAdmin()): ?>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo (strpos($_SERVER['REQUEST_URI'], '/admin') !== false) ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/admin">Admin Panel</a>
-                    </li>
-                    <?php endif; ?>
-                    
+            <ul class="navbar-nav" data-aos="fade-left" data-aos-duration="800" data-aos-delay="200">
+                <?php if(isset($_SESSION['user_id'])) : ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user"></i> <?php echo $_SESSION['user_name']; ?>
+                            <i class="fas fa-user-circle me-1"></i> <?php echo $_SESSION['user_name']; ?>
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>/users/profile">Profilim</a></li>
-                            <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>/users/edit">Profil Düzenle</a></li>
-                            <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>/users/emailPreferences">E-posta Tercihleri</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>/users/profile"><i class="fas fa-id-card me-2"></i>Profilim</a></li>
+                            <?php if($_SESSION['user_role'] == 'client') : ?>
+                                <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>/projects/manage"><i class="fas fa-tasks me-2"></i>Projelerim</a></li>
+                            <?php else : ?>
+                                <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>/bids/mybids"><i class="fas fa-hand-holding-usd me-2"></i>Tekliflerim</a></li>
+                            <?php endif; ?>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>/users/logout">Çıkış Yap</a></li>
+                            <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>/users/logout"><i class="fas fa-sign-out-alt me-2"></i>Çıkış Yap</a></li>
                         </ul>
                     </li>
-                <?php else: ?>
+                <?php else : ?>
                     <li class="nav-item">
-                        <a class="nav-link <?php echo (strpos($_SERVER['REQUEST_URI'], '/users/login') !== false) ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/users/login">Giriş Yap</a>
+                        <a class="nav-link btn btn-outline-primary me-2 btn-ripple" href="<?php echo SITE_URL; ?>/users/login">Giriş Yap</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?php echo (strpos($_SERVER['REQUEST_URI'], '/users/register') !== false) ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>/users/register">Kayıt Ol</a>
+                        <a class="nav-link btn btn-primary btn-ripple" href="<?php echo SITE_URL; ?>/users/register">Kayıt Ol</a>
                     </li>
                 <?php endif; ?>
             </ul>

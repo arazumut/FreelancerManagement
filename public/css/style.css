@@ -206,3 +206,87 @@ body {
         font-size: 1.5rem;
     }
 } 
+
+/* Animasyonlar */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulseGlow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(74, 107, 255, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(74, 107, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(74, 107, 255, 0);
+    }
+}
+
+/* Hero Bölgesi Animasyonu */
+.hero-section {
+    animation: fadeInUp 1s ease-out both;
+    background: linear-gradient(135deg, #4a6bff, #6b7bff, #2257ea);
+    background-size: 400% 400%;
+    animation: gradientBG 10s ease infinite;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Kart Animasyonu */
+.project-card,
+.profile-card,
+.form-card,
+.stats-box {
+    animation: fadeInUp 0.8s ease-out both;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover Efektleri */
+.project-card:hover,
+.profile-card:hover,
+.stats-box:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Buton Animasyonları */
+.btn-primary,
+.btn-outline-primary {
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.btn-primary:focus,
+.btn-outline-primary:focus {
+    animation: pulseGlow 1.5s infinite;
+    outline: none;
+}
+
+/* Simge Yuvarlakları */
+.rounded-circle {
+    animation: fadeInUp 1s ease-out;
+    background: linear-gradient(135deg, #4a6bff, #2257ea);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Başlıklar */
+h2, h4 {
+    animation: fadeInUp 1s ease-out;
+}
+
+/* Yumuşak geçişler */
+body, .card, .btn, .badge {
+    transition: all 0.3s ease-in-out;
+}
