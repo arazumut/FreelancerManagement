@@ -160,5 +160,42 @@ class User {
 
         return $this->db->execute();
     }
+
+    // Admin tarafından kullanıcıyı güncelle
+    public function updateUserByAdmin($data) {
+        $this->db->query('UPDATE users SET name = :name, email = :email, role = :role, status = :status WHERE id = :id');
+        
+        // Parametreleri bağla
+        $this->db->bind(':id', $data['id']);
+        $this->db->bind(':name', $data['name']);
+        $this->db->bind(':email', $data['email']);
+        $this->db->bind(':role', $data['role']);
+        $this->db->bind(':status', $data['status']);
+
+        // Çalıştır
+        return $this->db->execute();
+    }
+
+    // Toplam kullanıcı sayısını getir
+    public function getTotalUsers() {
+        $this->db->query('SELECT COUNT(*) as total FROM users');
+        $result = $this->db->single();
+        return $result->total;
+    }
+
+    // Son kayıt olan kullanıcıları getir
+    public function getRecentUsers($limit = 5) {
+        $this->db->query('SELECT * FROM users ORDER BY created_at DESC LIMIT :limit');
+        $this->db->bind(':limit', $limit);
+        return $this->db->resultSet();
+    }
+
+    // Rol bazında kullanıcı sayısını getir
+    public function getUserCountByRole($role) {
+        $this->db->query('SELECT COUNT(*) as total FROM users WHERE role = :role');
+        $this->db->bind(':role', $role);
+        $result = $this->db->single();
+        return $result->total;
+    }
 }
 ?> 

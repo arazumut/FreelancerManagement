@@ -129,11 +129,12 @@ class Projects extends Controller {
 
     // Yeni proje ekle
     public function add() {
-        // Oturum ve yetki kontrolü
+        // Oturum kontrolü
         if(!isLoggedIn()) {
             redirect('users/login');
         }
 
+        // İşveren kontrolü
         if(!isEmployer() && !isAdmin()) {
             redirect('pages/error/unauthorized');
         }
@@ -141,7 +142,7 @@ class Projects extends Controller {
         // POST isteği kontrolü
         if($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Form verilerini temizle
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            $_POST = $this->sanitizeInputArray(INPUT_POST, $_POST);
 
             // CSRF token kontrolü
             if(!$this->validateCsrfToken($_POST['csrf_token'])) {
@@ -260,7 +261,7 @@ class Projects extends Controller {
 
     // Proje düzenle
     public function edit($id = null) {
-        // ID yoksa projelere yönlendir
+        // ID kontrolü
         if($id === null) {
             redirect('projects');
         }
@@ -273,7 +274,7 @@ class Projects extends Controller {
             redirect('pages/error/notfound');
         }
 
-        // Oturum ve yetki kontrolü
+        // Oturum kontrolü
         if(!isLoggedIn()) {
             redirect('users/login');
         }
@@ -286,7 +287,7 @@ class Projects extends Controller {
         // POST isteği kontrolü
         if($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Form verilerini temizle
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            $_POST = $this->sanitizeInputArray(INPUT_POST, $_POST);
 
             // CSRF token kontrolü
             if(!$this->validateCsrfToken($_POST['csrf_token'])) {

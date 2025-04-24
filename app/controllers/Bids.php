@@ -17,9 +17,19 @@ class Bids extends Controller {
 
     // Teklif ekle
     public function add($project_id = null) {
-        // Proje ID'si yoksa projelere yönlendir
+        // ID kontrolü
         if($project_id === null) {
             redirect('projects');
+        }
+
+        // Oturum kontrolü
+        if(!isLoggedIn()) {
+            redirect('users/login');
+        }
+
+        // Freelancer kontrolü
+        if(!isFreelancer()) {
+            redirect('pages/error/unauthorized');
         }
 
         // Projeyi getir
@@ -30,37 +40,28 @@ class Bids extends Controller {
             redirect('pages/error/notfound');
         }
 
-        // Oturum ve yetki kontrolü
-        if(!isLoggedIn()) {
-            redirect('users/login');
-        }
-
-        if(!isFreelancer()) {
-            redirect('pages/error/unauthorized');
-        }
-
-        // Kendi projesine teklif veremez
+        // Proje sahibi kendine teklif veremez
         if($_SESSION['user_id'] == $project->user_id) {
             $this->setFlashMessage('bid_error', 'Kendi projenize teklif veremezsiniz.', 'danger');
             redirect('projects/view/' . $project_id);
         }
 
-        // Proje aktif mi kontrol et
+        // Proje aktif değilse teklif verilemez
         if($project->status != 'active') {
-            $this->setFlashMessage('bid_error', 'Bu proje için teklif verme süresi dolmuş.', 'danger');
+            $this->setFlashMessage('bid_error', 'Bu proje aktif değil, teklif veremezsiniz.', 'danger');
             redirect('projects/view/' . $project_id);
         }
 
         // Kullanıcı daha önce teklif vermiş mi kontrol et
         if($this->bidModel->checkUserBid($project_id, $_SESSION['user_id'])) {
-            $this->setFlashMessage('bid_error', 'Bu proje için zaten teklif vermişsiniz.', 'danger');
+            $this->setFlashMessage('bid_error', 'Bu projeye zaten teklif vermişsiniz.', 'danger');
             redirect('projects/view/' . $project_id);
         }
 
         // POST isteği kontrolü
         if($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Form verilerini temizle
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            $_POST = $this->sanitizeInputArray(INPUT_POST, $_POST);
 
             // CSRF token kontrolü
             if(!$this->validateCsrfToken($_POST['csrf_token'])) {
@@ -151,7 +152,7 @@ class Bids extends Controller {
 
     // Teklif düzenle
     public function edit($id = null) {
-        // ID yoksa tekliflere yönlendir
+        // ID kontrolü
         if($id === null) {
             redirect('bids/my');
         }
@@ -164,29 +165,26 @@ class Bids extends Controller {
             redirect('pages/error/notfound');
         }
 
-        // Oturum ve yetki kontrolü
+        // Oturum kontrolü
         if(!isLoggedIn()) {
             redirect('users/login');
         }
 
         // Kullanıcı teklifin sahibi mi kontrol et
-        if($_SESSION['user_id'] != $bid->user_id && !isAdmin()) {
+        if($_SESSION['user_id'] != $bid->user_id) {
             redirect('pages/error/unauthorized');
         }
 
-        // Teklif durumu kontrol et (sadece beklemedeki teklifler düzenlenebilir)
+        // Teklif beklemede mi kontrol et (sadece beklemedeki teklifler düzenlenebilir)
         if($bid->status != 'pending') {
             $this->setFlashMessage('bid_error', 'Sadece beklemedeki teklifler düzenlenebilir.', 'danger');
             redirect('bids/my');
         }
 
-        // Projeyi getir
-        $project = $this->projectModel->getProjectById($bid->project_id);
-
         // POST isteği kontrolü
         if($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Form verilerini temizle
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            $_POST = $this->sanitizeInputArray(INPUT_POST, $_POST);
 
             // CSRF token kontrolü
             if(!$this->validateCsrfToken($_POST['csrf_token'])) {
@@ -204,7 +202,7 @@ class Bids extends Controller {
                 'amount_err' => '',
                 'delivery_time_err' => '',
                 'bid' => $bid,
-                'project' => $project,
+                'project' => $this->projectModel->getProjectById($bid->project_id),
                 'csrf_token' => $this->generateCsrfToken()
             ];
 
@@ -219,8 +217,8 @@ class Bids extends Controller {
                 $data['amount_err'] = 'Lütfen teklif tutarını girin';
             } elseif($data['amount'] <= 0) {
                 $data['amount_err'] = 'Teklif tutarı 0\'dan büyük olmalıdır';
-            } elseif($data['amount'] < $project->min_budget || $data['amount'] > $project->max_budget) {
-                $data['amount_err'] = 'Teklif tutarı, proje bütçe aralığında olmalıdır (' . $project->min_budget . ' - ' . $project->max_budget . ')';
+            } elseif($data['amount'] < $data['project']->min_budget || $data['amount'] > $data['project']->max_budget) {
+                $data['amount_err'] = 'Teklif tutarı, proje bütçe aralığında olmalıdır (' . $data['project']->min_budget . ' - ' . $data['project']->max_budget . ')';
             }
 
             if(empty($data['delivery_time'])) {
@@ -255,7 +253,7 @@ class Bids extends Controller {
                 'amount_err' => '',
                 'delivery_time_err' => '',
                 'bid' => $bid,
-                'project' => $project,
+                'project' => $this->projectModel->getProjectById($bid->project_id),
                 'csrf_token' => $this->generateCsrfToken()
             ];
 

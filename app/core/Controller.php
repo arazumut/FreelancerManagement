@@ -65,9 +65,57 @@ class Controller {
     // CSRF token kontrol et
     protected function validateCsrfToken($token) {
         if(isset($_SESSION['csrf_token']) && $_SESSION['csrf_token'] === $token) {
+            // Token kullanıldıktan sonra yenisini oluştur
+            //unset($_SESSION['csrf_token']);
             return true;
         }
         return false;
+    }
+    
+    // Form verilerini temizle (FILTER_SANITIZE_STRING yerine)
+    protected function sanitizeInputArray($type, $data) {
+        $sanitizedData = [];
+        
+        if($type === INPUT_POST && isset($_POST)) {
+            foreach($_POST as $key => $value) {
+                if(is_string($value)) {
+                    // String değerleri temizle
+                    $sanitizedData[$key] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+                } elseif(is_array($value)) {
+                    // Dizi ise, her elemanı temizle
+                    $sanitizedData[$key] = [];
+                    foreach($value as $arrayKey => $arrayValue) {
+                        if(is_string($arrayValue)) {
+                            $sanitizedData[$key][$arrayKey] = htmlspecialchars($arrayValue, ENT_QUOTES, 'UTF-8');
+                        } else {
+                            $sanitizedData[$key][$arrayKey] = $arrayValue;
+                        }
+                    }
+                } else {
+                    // Diğer veri tipleri
+                    $sanitizedData[$key] = $value;
+                }
+            }
+        } elseif($type === INPUT_GET && isset($_GET)) {
+            foreach($_GET as $key => $value) {
+                if(is_string($value)) {
+                    $sanitizedData[$key] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+                } elseif(is_array($value)) {
+                    $sanitizedData[$key] = [];
+                    foreach($value as $arrayKey => $arrayValue) {
+                        if(is_string($arrayValue)) {
+                            $sanitizedData[$key][$arrayKey] = htmlspecialchars($arrayValue, ENT_QUOTES, 'UTF-8');
+                        } else {
+                            $sanitizedData[$key][$arrayKey] = $arrayValue;
+                        }
+                    }
+                } else {
+                    $sanitizedData[$key] = $value;
+                }
+            }
+        }
+        
+        return $sanitizedData;
     }
 }
 ?> 

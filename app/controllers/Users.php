@@ -27,8 +27,8 @@ class Users extends Controller {
         // POST isteği kontrolü
         if($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Form verilerini temizle
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-
+            $_POST = $this->sanitizeInputArray(INPUT_POST, $_POST);
+            
             // CSRF token kontrolü
             if(!$this->validateCsrfToken($_POST['csrf_token'])) {
                 $this->setFlashMessage('register_error', 'Güvenlik doğrulaması başarısız oldu. Lütfen tekrar deneyin.', 'danger');
@@ -131,7 +131,7 @@ class Users extends Controller {
         // POST isteği kontrolü
         if($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Form verilerini temizle
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            $_POST = $this->sanitizeInputArray(INPUT_POST, $_POST);
 
             // CSRF token kontrolü
             if(!$this->validateCsrfToken($_POST['csrf_token'])) {
@@ -300,7 +300,7 @@ class Users extends Controller {
         // POST isteği kontrolü
         if($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Form verilerini temizle
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            $_POST = $this->sanitizeInputArray(INPUT_POST, $_POST);
             
             // CSRF token kontrolü
             if(!$this->validateCsrfToken($_POST['csrf_token'])) {
@@ -417,19 +417,20 @@ class Users extends Controller {
         }
     }
 
-    // E-posta tercihleri sayfası
+    // E-posta tercihlerini düzenleme
     public function emailPreferences() {
         // Oturum kontrolü
         if(!isLoggedIn()) {
             redirect('users/login');
         }
         
+        // Kullanıcının kendi e-posta tercihlerini mi düzenlediğini kontrol et
         $user_id = $_SESSION['user_id'];
         
         // POST isteği kontrolü
         if($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Form verilerini temizle
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            $_POST = $this->sanitizeInputArray(INPUT_POST, $_POST);
             
             // CSRF token kontrolü
             if(!$this->validateCsrfToken($_POST['csrf_token'])) {
@@ -477,7 +478,7 @@ class Users extends Controller {
         }
     }
 
-    // Şifremi unuttum sayfası (Opsiyonel)
+    // Şifremi unuttum sayfası
     public function forgotPassword() {
         // Eğer oturum açıksa ana sayfaya yönlendir
         if(isLoggedIn()) {
@@ -487,7 +488,7 @@ class Users extends Controller {
         // POST isteği kontrolü
         if($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Form verilerini temizle
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            $_POST = $this->sanitizeInputArray(INPUT_POST, $_POST);
             
             // CSRF token kontrolü
             if(!$this->validateCsrfToken($_POST['csrf_token'])) {

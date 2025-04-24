@@ -66,7 +66,7 @@ class Pages extends Controller {
         // POST isteği kontrolü
         if($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Form verilerini temizle
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            $_POST = $this->sanitizeInputArray(INPUT_POST, $_POST);
             
             // Form verilerini işle
             $data = [

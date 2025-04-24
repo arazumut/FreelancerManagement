@@ -171,5 +171,50 @@ class Contract {
         $this->db->bind(':id', $id);
         return $this->db->execute();
     }
+    
+    // Toplam sözleşme sayısını getir
+    public function getTotalContracts() {
+        $this->db->query('SELECT COUNT(*) as total FROM contracts');
+        $result = $this->db->single();
+        return $result->total;
+    }
+    
+    // Son sözleşmeleri getir
+    public function getRecentContracts($limit = 5) {
+        $this->db->query('SELECT c.*, p.title as project_title,
+                          f.name as freelancer_name,
+                          e.name as employer_name,
+                          b.amount as bid_amount
+                          FROM contracts c
+                          JOIN projects p ON c.project_id = p.id
+                          JOIN users f ON c.freelancer_id = f.id
+                          JOIN users e ON c.employer_id = e.id
+                          LEFT JOIN bids b ON c.project_id = b.project_id AND c.freelancer_id = b.user_id
+                          ORDER BY c.started_at DESC
+                          LIMIT :limit');
+        
+        $this->db->bind(':limit', $limit);
+        return $this->db->resultSet();
+    }
+    
+    // Durum bazında sözleşme sayısını getir
+    public function getContractCountByStatus($status) {
+        $this->db->query('SELECT COUNT(*) as total FROM contracts WHERE status = :status');
+        $this->db->bind(':status', $status);
+        $result = $this->db->single();
+        return $result->total;
+    }
+    
+    // Admin tarafından sözleşme güncelleme
+    public function updateContractByAdmin($data) {
+        $this->db->query('UPDATE contracts 
+                          SET status = :status
+                          WHERE id = :id');
+        
+        $this->db->bind(':id', $data['id']);
+        $this->db->bind(':status', $data['status']);
+        
+        return $this->db->execute();
+    }
 }
 ?> 

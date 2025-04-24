@@ -226,5 +226,67 @@ class Project {
         $result = $this->db->single();
         return $result->count;
     }
+
+    // Admin tarafından projeyi güncelle
+    public function updateProjectByAdmin($data) {
+        $this->db->query('UPDATE projects 
+                          SET title = :title, 
+                              description = :description, 
+                              budget = :budget, 
+                              deadline = :deadline, 
+                              status = :status, 
+                              updated_at = CURRENT_TIMESTAMP 
+                          WHERE id = :id');
+        
+        $this->db->bind(':id', $data['id']);
+        $this->db->bind(':title', $data['title']);
+        $this->db->bind(':description', $data['description']);
+        $this->db->bind(':budget', $data['budget']);
+        $this->db->bind(':deadline', $data['deadline']);
+        $this->db->bind(':status', $data['status']);
+        
+        return $this->db->execute();
+    }
+    
+    // Toplam proje sayısını getir
+    public function getTotalProjects() {
+        $this->db->query('SELECT COUNT(*) as total FROM projects');
+        $result = $this->db->single();
+        return $result->total;
+    }
+    
+    // Son eklenen projeleri getir
+    public function getRecentProjects($limit = 5) {
+        $this->db->query('SELECT p.*, c.name as category_name, u.name as employer_name 
+                          FROM projects p 
+                          JOIN categories c ON p.category_id = c.id 
+                          JOIN users u ON p.user_id = u.id 
+                          ORDER BY p.created_at DESC
+                          LIMIT :limit');
+        
+        $this->db->bind(':limit', $limit);
+        return $this->db->resultSet();
+    }
+    
+    // Durum bazında projeleri getir
+    public function getProjectsByStatus($status) {
+        $this->db->query('SELECT p.*, c.name as category_name, u.name as employer_name 
+                          FROM projects p 
+                          JOIN categories c ON p.category_id = c.id 
+                          JOIN users u ON p.user_id = u.id 
+                          WHERE p.status = :status
+                          ORDER BY p.created_at DESC');
+        
+        $this->db->bind(':status', $status);
+        return $this->db->resultSet();
+    }
+    
+    // Durum bazında proje sayısı getir
+    public function getProjectCountByStatus($status) {
+        $this->db->query('SELECT COUNT(*) as total FROM projects WHERE status = :status');
+        $this->db->bind(':status', $status);
+        $result = $this->db->single();
+        return $result->total;
+    }
 }
 ?> 

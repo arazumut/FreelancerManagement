@@ -153,5 +153,65 @@ class Bid {
         $result = $this->db->single();
         return $result->count;
     }
+
+    // Tüm teklifleri getir (Admin paneli için)
+    public function getAllBids() {
+        $this->db->query('SELECT b.*, p.title as project_title, p.slug as project_slug, 
+                          u.name as freelancer_name, e.name as employer_name
+                          FROM bids b 
+                          JOIN projects p ON b.project_id = p.id 
+                          JOIN users u ON b.user_id = u.id 
+                          JOIN users e ON p.user_id = e.id
+                          ORDER BY b.created_at DESC');
+        return $this->db->resultSet();
+    }
+    
+    // Admin tarafından teklif güncelleme
+    public function updateBidByAdmin($data) {
+        $this->db->query('UPDATE bids 
+                          SET description = :description, 
+                              amount = :amount, 
+                              delivery_time = :delivery_time,
+                              status = :status,
+                              updated_at = CURRENT_TIMESTAMP 
+                          WHERE id = :id');
+        
+        $this->db->bind(':id', $data['id']);
+        $this->db->bind(':description', $data['description']);
+        $this->db->bind(':amount', $data['amount']);
+        $this->db->bind(':delivery_time', $data['delivery_time']);
+        $this->db->bind(':status', $data['status']);
+        
+        return $this->db->execute();
+    }
+    
+    // Toplam teklif sayısını getir
+    public function getTotalBids() {
+        $this->db->query('SELECT COUNT(*) as total FROM bids');
+        $result = $this->db->single();
+        return $result->total;
+    }
+    
+    // Durum bazında teklif sayısını getir
+    public function getBidCountByStatus($status) {
+        $this->db->query('SELECT COUNT(*) as total FROM bids WHERE status = :status');
+        $this->db->bind(':status', $status);
+        $result = $this->db->single();
+        return $result->total;
+    }
+    
+    // Son teklifleri getir
+    public function getRecentBids($limit = 5) {
+        $this->db->query('SELECT b.*, p.title as project_title, p.slug as project_slug, 
+                          u.name as freelancer_name, e.name as employer_name
+                          FROM bids b 
+                          JOIN projects p ON b.project_id = p.id 
+                          JOIN users u ON b.user_id = u.id 
+                          JOIN users e ON p.user_id = e.id
+                          ORDER BY b.created_at DESC
+                          LIMIT :limit');
+        $this->db->bind(':limit', $limit);
+        return $this->db->resultSet();
+    }
 }
 ?> 
